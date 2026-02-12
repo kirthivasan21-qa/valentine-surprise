@@ -42,11 +42,6 @@ h1 {
   margin-bottom: 30px;
 }
 
-.buttons {
-  position: relative;
-  height: 80px;
-}
-
 button {
   font-size: 20px;
   padding: 12px 25px;
@@ -66,12 +61,14 @@ button {
   transform: scale(1.1);
 }
 
+/* IMPORTANT: fixed for full screen movement */
 #no {
   background: white;
   color: #ff4d6d;
-  position: absolute;
+  position: fixed;
 }
 
+/* Message areas */
 #message {
   display: none;
   font-size: 26px;
@@ -100,7 +97,7 @@ button {
 /* Floating Hearts */
 .heart {
   position: fixed;
-  bottom: -10px;
+  bottom: -20px;
   animation: floatUp 6s linear forwards;
   z-index: 1;
 }
@@ -119,10 +116,8 @@ button {
 <div class="container">
   <h1 id="question">Will you be my Valentine? ❤️</h1>
 
-  <div class="buttons">
-    <button id="yes" onclick="startLove()">Yes 💖</button>
-    <button id="no">No 😜</button>
-  </div>
+  <button id="yes" onclick="startLove()">Yes 💖</button>
+  <button id="no">No 😜</button>
 
   <div id="message"></div>
 
@@ -141,11 +136,10 @@ const messageDiv = document.getElementById("message");
 const loveBox = document.getElementById("loveBox");
 const music = document.getElementById("bgMusic");
 
-/* Make NO button run away but stay inside button area */
+/* FULL SCREEN RUNNING NO BUTTON */
 noBtn.addEventListener("mouseover", function() {
-  const parent = document.querySelector(".buttons");
-  const maxX = parent.offsetWidth - noBtn.offsetWidth;
-  const maxY = parent.offsetHeight - noBtn.offsetHeight;
+  const maxX = window.innerWidth - noBtn.offsetWidth;
+  const maxY = window.innerHeight - noBtn.offsetHeight;
 
   const x = Math.random() * maxX;
   const y = Math.random() * maxY;
@@ -170,9 +164,11 @@ function typeWriter() {
   }
 }
 
+/* Start everything */
 function startLove() {
   document.getElementById("question").style.display = "none";
-  document.querySelector(".buttons").style.display = "none";
+  document.getElementById("yes").style.display = "none";
+  document.getElementById("no").style.display = "none";
 
   messageDiv.style.display = "block";
 
