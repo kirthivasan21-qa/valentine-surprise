@@ -1,230 +1,163 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Will You Be My Valentine?</title>
+  <title>For You ❤️</title>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to right, #ff9a9e, #fad0c4);
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
 
-<style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+    .container {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
 
-body {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(to right, #ff758c, #ff7eb3);
-  font-family: Arial, sans-serif;
-  overflow: hidden;
-  position: relative;
-  color: white;
-}
+    h1 {
+      font-size: 3rem;
+      color: white;
+      margin-bottom: 30px;
+    }
 
-/* Confetti canvas behind everything */
-#confettiCanvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 0;
-}
+    button {
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      margin: 10px;
+      transition: 0.3s;
+    }
 
-/* Main content */
-.container {
-  text-align: center;
-  z-index: 2;
-  position: relative;
-}
+    #yes {
+      background: #ff4d6d;
+      color: white;
+    }
 
-h1 {
-  font-size: 42px;
-  margin-bottom: 30px;
-}
+    #yes:hover {
+      background: #ff1e4d;
+    }
 
-button {
-  font-size: 20px;
-  padding: 12px 25px;
-  margin: 10px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: 0.3s ease;
-}
+    #no {
+      background: white;
+      color: #ff4d6d;
+      position: fixed;
+    }
 
-#yes {
-  background: white;
-  color: #ff4d6d;
-}
+    .message {
+      display: none;
+      font-size: 2rem;
+      color: white;
+      margin-top: 20px;
+      max-width: 80%;
+    }
 
-#yes:hover {
-  transform: scale(1.1);
-}
+    .heart {
+      position: fixed;
+      color: red;
+      animation: float 5s linear infinite;
+    }
 
-/* IMPORTANT: fixed for full screen movement */
-#no {
-  background: white;
-  color: #ff4d6d;
-  position: fixed;
-}
-
-/* Message areas */
-#message {
-  display: none;
-  font-size: 26px;
-  margin-top: 30px;
-  min-height: 60px;
-}
-
-#loveBox {
-  display: none;
-  margin-top: 30px;
-  padding: 35px;
-  background: white;
-  color: #ff4d6d;
-  font-size: 36px;
-  font-weight: bold;
-  border-radius: 25px;
-  box-shadow: 0 0 35px rgba(255,255,255,0.9);
-  animation: popIn 1s ease forwards;
-}
-
-@keyframes popIn {
-  from { transform: scale(0.6); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-/* Floating Hearts */
-.heart {
-  position: fixed;
-  bottom: -20px;
-  animation: floatUp 6s linear forwards;
-  z-index: 1;
-}
-
-@keyframes floatUp {
-  from { transform: translateY(0); opacity: 1; }
-  to { transform: translateY(-110vh); opacity: 0; }
-}
-</style>
+    @keyframes float {
+      0% { transform: translateY(100vh); opacity: 1; }
+      100% { transform: translateY(-10vh); opacity: 0; }
+    }
+  </style>
 </head>
 
 <body>
 
-<canvas id="confettiCanvas"></canvas>
-
 <div class="container">
-  <h1 id="question">Will you be my Valentine? ❤️</h1>
-
-  <button id="yes" onclick="startLove()">Yes 💖</button>
-  <button id="no">No 😜</button>
-
-  <div id="message"></div>
-
-  <div id="loveBox">
-    I love you sweetheart 💖
+  <h1>Will You Be My Valentine? ❤️</h1>
+  <div>
+    <button id="yes">Yes 💖</button>
+    <button id="no">No 😢</button>
   </div>
+  <div class="message" id="loveMessage"></div>
 </div>
 
-<audio id="bgMusic" loop preload="auto">
-  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-</audio>
+<!-- YouTube Background Music -->
+<iframe
+  id="ytMusic"
+  width="0"
+  height="0"
+  src="https://www.youtube.com/embed/rp3_FhRnIRw?autoplay=1&loop=1&playlist=VIDEO_ID&mute=1"
+  frameborder="0"
+  allow="autoplay">
+</iframe>
 
 <script>
+const yesBtn = document.getElementById("yes");
 const noBtn = document.getElementById("no");
-const messageDiv = document.getElementById("message");
-const loveBox = document.getElementById("loveBox");
-const music = document.getElementById("bgMusic");
+const message = document.getElementById("loveMessage");
+const ytFrame = document.getElementById("ytMusic");
 
-/* FULL SCREEN RUNNING NO BUTTON */
+// Make NO button run across full screen
 noBtn.addEventListener("mouseover", function() {
   const maxX = window.innerWidth - noBtn.offsetWidth;
   const maxY = window.innerHeight - noBtn.offsetHeight;
-
-  const x = Math.random() * maxX;
-  const y = Math.random() * maxY;
-
-  noBtn.style.left = x + "px";
-  noBtn.style.top = y + "px";
+  noBtn.style.left = Math.random() * maxX + "px";
+  noBtn.style.top = Math.random() * maxY + "px";
 });
 
-/* Typewriter */
-const text = "Yayyyy!!! 💕 You just made me the happiest person alive ❤️";
-let index = 0;
+// YES button action
+yesBtn.addEventListener("click", function() {
+  message.style.display = "block";
+  typeWriterEffect("You made me the happiest person alive ❤️ I love you sweetheart 💕");
+  createHearts();
+  confettiBurst();
 
-function typeWriter() {
-  if (index < text.length) {
-    messageDiv.innerHTML += text.charAt(index);
-    index++;
-    setTimeout(typeWriter, 50);
-  } else {
-    setTimeout(() => {
-      loveBox.style.display = "block";
-    }, 1000);
+  // Unmute music after YES click
+  ytFrame.src = ytFrame.src.replace("mute=1", "mute=0");
+});
+
+function typeWriterEffect(text) {
+  let i = 0;
+  message.innerHTML = "";
+  function typing() {
+    if (i < text.length) {
+      message.innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typing, 60);
+    }
   }
+  typing();
 }
 
-/* Start everything */
-function startLove() {
-  document.getElementById("question").style.display = "none";
-  document.getElementById("yes").style.display = "none";
-  document.getElementById("no").style.display = "none";
-
-  messageDiv.style.display = "block";
-
-  music.volume = 0.4;
-  music.play().catch(() => {});
-
-  typeWriter();
-  launchConfetti();
-  startHearts();
-}
-
-/* Floating Hearts */
-function startHearts() {
+function createHearts() {
   setInterval(() => {
     const heart = document.createElement("div");
     heart.classList.add("heart");
-    heart.innerHTML = "💖";
+    heart.innerHTML = "❤️";
     heart.style.left = Math.random() * 100 + "vw";
     heart.style.fontSize = Math.random() * 20 + 20 + "px";
     document.body.appendChild(heart);
-    setTimeout(() => heart.remove(), 6000);
+    setTimeout(() => heart.remove(), 5000);
   }, 300);
 }
 
-/* Confetti */
-const canvas = document.getElementById("confettiCanvas");
-const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-let confetti = [];
-
-function launchConfetti() {
-  for (let i = 0; i < 200; i++) {
-    confetti.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height - canvas.height,
-      r: Math.random() * 6 + 2,
-      d: Math.random() * 10 + 5,
-      color: "hsl(" + Math.random() * 360 + ", 100%, 50%)"
-    });
+function confettiBurst() {
+  for (let i = 0; i < 100; i++) {
+    const confetti = document.createElement("div");
+    confetti.style.position = "fixed";
+    confetti.style.width = "10px";
+    confetti.style.height = "10px";
+    confetti.style.backgroundColor =
+      "hsl(" + Math.random() * 360 + ", 100%, 50%)";
+    confetti.style.left = Math.random() * 100 + "vw";
+    confetti.style.top = Math.random() * 100 + "vh";
+    confetti.style.opacity = Math.random();
+    document.body.appendChild(confetti);
+    setTimeout(() => confetti.remove(), 2000);
   }
-  drawConfetti();
-}
-
-function drawConfetti() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  confetti.forEach((c, i) => {
-    ctx.beginPath();
-    ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
-    ctx.fillStyle = c.color;
-    ctx.fill();
-    c.y += c.d;
-    if (c.y > canvas.height) confetti.splice(i, 1);
-  });
-  requestAnimationFrame(drawConfetti);
 }
 </script>
 
