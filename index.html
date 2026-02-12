@@ -80,206 +80,56 @@ button {
   font-weight: bold;
 }
 
-/* Love Box */
+/* Envelope */
 .love-box {
   display: none;
-  margin-top: 40px;
+  margin-top: 50px;
   position: relative;
-  width: 280px;
-  height: 180px;
+  width: 300px;
+  height: 200px;
   margin-left: auto;
   margin-right: auto;
-  perspective: 800px;
+  perspective: 1000px;
 }
 
+/* Envelope body */
 .box-base {
   width: 100%;
-  height: 120px;
+  height: 140px;
   background: #ff4d6d;
   position: absolute;
   bottom: 0;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  border-radius: 0 0 15px 15px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.3);
 }
 
+/* Lid */
 .box-lid {
   width: 100%;
-  height: 70px;
+  height: 100px;
   background: #ff1e4d;
   position: absolute;
   top: 0;
-  border-radius: 12px 12px 0 0;
-  transform-origin: bottom;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transform-origin: top;
   transition: transform 1s ease;
 }
 
+/* Letter Card */
 .love-text {
   position: absolute;
-  width: 100%;
-  text-align: center;
-  bottom: 45px;
-  font-size: 34px;
+  width: 85%;
+  left: 7.5%;
+  height: 120px;
+  background: white;
+  color: #ff1e4d;
+  font-size: 26px;
   font-weight: bold;
-  opacity: 0;
-  transform: scale(0.5);
-  transition: all 0.8s ease 0.8s;
-}
-
-.love-box.open .box-lid {
-  transform: rotateX(-120deg);
-}
-
-.love-box.open .love-text {
-  opacity: 1;
-  transform: scale(1.1);
-}
-
-/* Floating Hearts */
-.heart {
-  position: fixed;
-  bottom: -20px;
-  animation: floatUp 6s linear forwards;
-  z-index: 1;
-}
-
-@keyframes floatUp {
-  to {
-    transform: translateY(-110vh);
-    opacity: 0;
-  }
-}
-</style>
-</head>
-
-<body>
-
-<canvas id="confettiCanvas"></canvas>
-
-<div class="container">
-  <h1 id="question">Will you be my Valentine? ❤️</h1>
-
-  <div class="buttons">
-    <button id="yes">Yes 💖</button>
-    <button id="no">No 😜</button>
-  </div>
-
-  <div id="message"></div>
-
-  <div class="love-box" id="loveBox">
-    <div class="box-lid"></div>
-    <div class="box-base"></div>
-    <div class="love-text">I LOVE YOU SWEETHEART 🤗</div>
-  </div>
-</div>
-
-<!-- 🎵 MUSIC -->
-<!-- 🔥 CHANGE FILE NAME BELOW -->
-<audio id="bgMusic" loop>
-  <source src="Munbe Vaa.mp3" type="audio/mpeg">
-</audio>
-
-<script>
-
-const yesBtn = document.getElementById("yes");
-const noBtn = document.getElementById("no");
-const messageDiv = document.getElementById("message");
-const loveBox = document.getElementById("loveBox");
-const music = document.getElementById("bgMusic");
-
-/* NO button runs full screen */
-noBtn.addEventListener("mouseover", function() {
-  const maxX = window.innerWidth - noBtn.offsetWidth;
-  const maxY = window.innerHeight - noBtn.offsetHeight;
-
-  noBtn.style.left = Math.random() * maxX + "px";
-  noBtn.style.top = Math.random() * maxY + "px";
-});
-
-/* YES clicked */
-yesBtn.addEventListener("click", function() {
-
-  document.getElementById("question").style.display = "none";
-  document.querySelector(".buttons").style.display = "none";
-
-  messageDiv.style.display = "block";
-  music.volume = 0.4;
-  music.play().catch(() => {});
-
-  typeWriter("You made me the happiest person alive ❤️");
-
-  setTimeout(() => {
-    loveBox.style.display = "block";
-    setTimeout(() => {
-      loveBox.classList.add("open");
-    }, 200);
-  }, 3500);
-
-  launchConfetti();
-  startHearts();
-});
-
-/* Typewriter */
-function typeWriter(text) {
-  let i = 0;
-  messageDiv.innerHTML = "";
-
-  function typing() {
-    if (i < text.length) {
-      messageDiv.innerHTML += text.charAt(i);
-      i++;
-      setTimeout(typing, 60);
-    }
-  }
-  typing();
-}
-
-/* Floating Hearts */
-function startHearts() {
-  setInterval(() => {
-    const heart = document.createElement("div");
-    heart.classList.add("heart");
-    heart.innerHTML = "💖";
-    heart.style.left = Math.random() * 100 + "vw";
-    heart.style.fontSize = Math.random() * 20 + 20 + "px";
-    document.body.appendChild(heart);
-    setTimeout(() => heart.remove(), 6000);
-  }, 300);
-}
-
-/* Confetti */
-const canvas = document.getElementById("confettiCanvas");
-const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-let confetti = [];
-
-function launchConfetti() {
-  for (let i = 0; i < 200; i++) {
-    confetti.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height - canvas.height,
-      r: Math.random() * 6 + 2,
-      d: Math.random() * 10 + 5,
-      color: "hsl(" + Math.random() * 360 + ", 100%, 50%)"
-    });
-  }
-  drawConfetti();
-}
-
-function drawConfetti() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  confetti.forEach((c) => {
-    ctx.beginPath();
-    ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
-    ctx.fillStyle = c.color;
-    ctx.fill();
-    c.y += c.d;
-  });
-  requestAnimationFrame(drawConfetti);
-}
-
-</script>
-
-</body>
-</html>
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border-radius: 12px;
+  bottom: 20px;
+  transform: translateY(100px);
+  box-shadow: 0 10px 20px rgba
