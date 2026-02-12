@@ -13,38 +13,24 @@
 
 body {
   height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   background: linear-gradient(to right, #ff758c, #ff7eb3);
   font-family: Arial, sans-serif;
   overflow: hidden;
   color: white;
-  position: relative;
-}
-
-/* Confetti canvas */
-#confettiCanvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 0;
-}
-
-.container {
   text-align: center;
-  z-index: 2;
-  position: relative;
+}
+
+/* Center container properly */
+.container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 h1 {
   font-size: 42px;
   margin-bottom: 30px;
-}
-
-.buttons {
-  position: relative;
-  height: 80px;
 }
 
 button {
@@ -62,17 +48,13 @@ button {
   color: white;
 }
 
-#yes:hover {
-  transform: scale(1.1);
-}
-
 #no {
   background: white;
   color: #ff4d6d;
-  position: fixed;
+  position: absolute;
 }
 
-/* Typewriter Message */
+/* Message */
 #message {
   display: none;
   font-size: 28px;
@@ -83,16 +65,14 @@ button {
 /* Envelope */
 .love-box {
   display: none;
-  margin-top: 50px;
+  margin-top: 40px;
   position: relative;
   width: 300px;
   height: 200px;
   margin-left: auto;
   margin-right: auto;
-  perspective: 1000px;
 }
 
-/* Envelope body */
 .box-base {
   width: 100%;
   height: 140px;
@@ -100,10 +80,8 @@ button {
   position: absolute;
   bottom: 0;
   border-radius: 0 0 15px 15px;
-  box-shadow: 0 15px 30px rgba(0,0,0,0.3);
 }
 
-/* Lid */
 .box-lid {
   width: 100%;
   height: 100px;
@@ -115,7 +93,7 @@ button {
   transition: transform 1s ease;
 }
 
-/* Letter Card */
+/* Letter */
 .love-text {
   position: absolute;
   width: 85%;
@@ -132,7 +110,6 @@ button {
   border-radius: 12px;
   bottom: 20px;
   transform: translateY(100px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
 }
 
 /* Open animation */
@@ -146,48 +123,20 @@ button {
 }
 
 @keyframes slideUp {
-  0% {
-    transform: translateY(100px);
-  }
-  60% {
-    transform: translateY(-20px);
-  }
-  80% {
-    transform: translateY(10px);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-
-/* Floating Hearts */
-.heart {
-  position: fixed;
-  bottom: -20px;
-  animation: floatUp 6s linear forwards;
-  z-index: 1;
-}
-
-@keyframes floatUp {
-  to {
-    transform: translateY(-110vh);
-    opacity: 0;
-  }
+  0% { transform: translateY(100px); }
+  60% { transform: translateY(-20px); }
+  100% { transform: translateY(0); }
 }
 </style>
 </head>
 
 <body>
 
-<canvas id="confettiCanvas"></canvas>
-
 <div class="container">
   <h1 id="question">Will you be my Valentine? ❤️</h1>
 
-  <div class="buttons">
-    <button id="yes">Yes 💖</button>
-    <button id="no">No 😜</button>
-  </div>
+  <button id="yes">Yes 💖</button>
+  <button id="no">No 😜</button>
 
   <div id="message"></div>
 
@@ -211,7 +160,6 @@ const messageDiv = document.getElementById("message");
 const loveBox = document.getElementById("loveBox");
 const music = document.getElementById("bgMusic");
 
-/* NO button runs */
 noBtn.addEventListener("mouseover", function() {
   const maxX = window.innerWidth - noBtn.offsetWidth;
   const maxY = window.innerHeight - noBtn.offsetHeight;
@@ -219,30 +167,23 @@ noBtn.addEventListener("mouseover", function() {
   noBtn.style.top = Math.random() * maxY + "px";
 });
 
-/* YES clicked */
 yesBtn.addEventListener("click", function() {
 
   document.getElementById("question").style.display = "none";
-  document.querySelector(".buttons").style.display = "none";
+  yesBtn.style.display = "none";
+  noBtn.style.display = "none";
 
   messageDiv.style.display = "block";
-  music.volume = 0.4;
-  music.play().catch(() => {});
+  music.play().catch(()=>{});
 
   typeWriter("You made me the happiest person alive ❤️");
 
   setTimeout(() => {
     loveBox.style.display = "block";
-    setTimeout(() => {
-      loveBox.classList.add("open");
-    }, 300);
+    loveBox.classList.add("open");
   }, 3500);
-
-  launchConfetti();
-  startHearts();
 });
 
-/* Typewriter */
 function typeWriter(text) {
   let i = 0;
   messageDiv.innerHTML = "";
@@ -254,51 +195,6 @@ function typeWriter(text) {
     }
   }
   typing();
-}
-
-/* Hearts */
-function startHearts() {
-  setInterval(() => {
-    const heart = document.createElement("div");
-    heart.classList.add("heart");
-    heart.innerHTML = "💖";
-    heart.style.left = Math.random() * 100 + "vw";
-    heart.style.fontSize = Math.random() * 20 + 20 + "px";
-    document.body.appendChild(heart);
-    setTimeout(() => heart.remove(), 6000);
-  }, 300);
-}
-
-/* Confetti */
-const canvas = document.getElementById("confettiCanvas");
-const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-let confetti = [];
-
-function launchConfetti() {
-  for (let i = 0; i < 200; i++) {
-    confetti.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height - canvas.height,
-      r: Math.random() * 6 + 2,
-      d: Math.random() * 10 + 5,
-      color: "hsl(" + Math.random() * 360 + ", 100%, 50%)"
-    });
-  }
-  drawConfetti();
-}
-
-function drawConfetti() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  confetti.forEach((c) => {
-    ctx.beginPath();
-    ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
-    ctx.fillStyle = c.color;
-    ctx.fill();
-    c.y += c.d;
-  });
-  requestAnimationFrame(drawConfetti);
 }
 </script>
 
