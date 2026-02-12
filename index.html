@@ -5,56 +5,211 @@
 
 <style>
 body {
+  margin: 0;
+  height: 100vh;
+  background: linear-gradient(to right, #ff758c, #ff7eb3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Arial, sans-serif;
   text-align: center;
-  font-family: Arial;
-  background-color: pink;
-  margin-top: 100px;
+  overflow: hidden;
+  color: white;
+}
+
+.container {
+  position: relative;
+  z-index: 2;
+}
+
+h1 {
+  font-size: 40px;
 }
 
 button {
   font-size: 20px;
-  padding: 10px 20px;
+  padding: 12px 25px;
   margin: 20px;
-  border-radius: 8px;
+  border: none;
+  border-radius: 10px;
   cursor: pointer;
+  transition: 0.3s ease;
+}
+
+#yes {
+  background-color: white;
+  color: #ff4d6d;
+}
+
+#yes:hover {
+  transform: scale(1.1);
 }
 
 #no {
+  background-color: white;
   position: absolute;
 }
 
-#response {
+#message {
   display: none;
+  font-size: 26px;
+  margin-top: 20px;
+  min-height: 60px;
+}
+
+#loveBox {
+  display: none;
+  margin-top: 30px;
+  padding: 35px;
+  background-color: white;
+  color: #ff4d6d;
+  font-size: 36px;
+  font-weight: bold;
+  border-radius: 25px;
+  box-shadow: 0px 0px 35px rgba(255,255,255,0.9);
+  animation: popIn 1.2s ease forwards;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.6); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Floating Hearts */
+.heart {
+  position: absolute;
   font-size: 24px;
-  color: darkred;
+  animation: floatUp 6s linear infinite;
+}
+
+@keyframes floatUp {
+  from {
+    transform: translateY(100vh);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-10vh);
+    opacity: 0;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<h1>Will you be my Valentine? ❤️</h1>
+<div class="container">
+  <h1>Will you be my Valentine? ❤️</h1>
+  <button id="yes" onclick="startLove()">Yes 💖</button>
+  <button id="no">No 😜</button>
 
-<button onclick="showMessage()">Yes 💖</button>
-<button id="no">No 😜</button>
+  <div id="message"></div>
 
-<div id="response">
-  <h2>Yay!!! 💕</h2>
-  <p>You just made my day the happiest ever ❤️</p>
+  <div id="loveBox">
+    I love you sweetheart 💖
+  </div>
 </div>
+
+<!-- Romantic Music -->
+<audio id="bgMusic" loop preload="auto">
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+</audio>
+
+<canvas id="confettiCanvas"></canvas>
 
 <script>
 const noBtn = document.getElementById("no");
+const messageDiv = document.getElementById("message");
+const loveBox = document.getElementById("loveBox");
+const music = document.getElementById("bgMusic");
 
+/* Make NO button run away */
 noBtn.addEventListener("mouseover", function() {
-  const x = Math.random() * window.innerWidth;
-  const y = Math.random() * window.innerHeight;
+  const x = Math.random() * (window.innerWidth - 100);
+  const y = Math.random() * (window.innerHeight - 50);
   noBtn.style.left = x + "px";
   noBtn.style.top = y + "px";
 });
 
-function showMessage() {
-  document.getElementById("response").style.display = "block";
+/* Typewriter Effect */
+const text = "Yayyyy!!! 💕 You just made me the happiest person alive ❤️";
+let index = 0;
+
+function typeWriter() {
+  if (index < text.length) {
+    messageDiv.innerHTML += text.charAt(index);
+    index++;
+    setTimeout(typeWriter, 50);
+  } else {
+    setTimeout(() => {
+      loveBox.style.display = "block";
+    }, 1000);
+  }
+}
+
+/* Start Everything */
+function startLove() {
+
+  // Hide question and buttons
+  document.querySelector("h1").style.display = "none";
+  document.getElementById("yes").style.display = "none";
+  document.getElementById("no").style.display = "none";
+
+  messageDiv.style.display = "block";
+
+  // Start music
+  music.volume = 0.4;
+  music.play().catch(err => console.log("Autoplay blocked:", err));
+
+  typeWriter();
+  launchConfetti();
+  startHearts();
+}
+
+/* Floating Hearts */
+function startHearts() {
+  setInterval(() => {
+    const heart = document.createElement("div");
+    heart.classList.add("heart");
+    heart.innerHTML = "💖";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = Math.random() * 20 + 20 + "px";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 6000);
+  }, 300);
+}
+
+/* Confetti */
+const canvas = document.getElementById("confettiCanvas");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let confetti = [];
+
+function launchConfetti() {
+  for (let i = 0; i < 200; i++) {
+    confetti.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      r: Math.random() * 6 + 2,
+      d: Math.random() * 10 + 5,
+      color: "hsl(" + Math.random() * 360 + ", 100%, 50%)"
+    });
+  }
+  drawConfetti();
+}
+
+function drawConfetti() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  confetti.forEach((c, i) => {
+    ctx.beginPath();
+    ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+    ctx.fillStyle = c.color;
+    ctx.fill();
+    c.y += c.d;
+    if (c.y > canvas.height) confetti.splice(i, 1);
+  });
+  requestAnimationFrame(drawConfetti);
 }
 </script>
 
