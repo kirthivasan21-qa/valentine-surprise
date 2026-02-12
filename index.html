@@ -30,7 +30,6 @@ body {
   z-index: 0;
 }
 
-/* Main content */
 .container {
   text-align: center;
   z-index: 2;
@@ -69,14 +68,66 @@ button {
 #no {
   background: white;
   color: #ff4d6d;
-  position: fixed; /* full screen movement */
+  position: fixed;
 }
 
-/* Message */
+/* Typewriter message */
 #message {
   display: none;
-  font-size: 26px;
+  font-size: 28px;
   margin-top: 20px;
+  font-weight: bold;
+}
+
+/* LOVE BOX */
+.love-box {
+  display: none;
+  margin-top: 30px;
+  position: relative;
+  width: 260px;
+  height: 160px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.box-base {
+  width: 100%;
+  height: 100px;
+  background: #ff4d6d;
+  position: absolute;
+  bottom: 0;
+  border-radius: 10px;
+}
+
+.box-lid {
+  width: 100%;
+  height: 60px;
+  background: #ff1e4d;
+  position: absolute;
+  top: 0;
+  border-radius: 10px 10px 0 0;
+  transform-origin: bottom;
+  transition: transform 1s ease;
+}
+
+.open .box-lid {
+  transform: rotateX(120deg);
+}
+
+.love-text {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  bottom: 40px;
+  font-size: 26px;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 1s ease 1s;
+}
+
+.open .love-text {
+  opacity: 1;
+  font-size: 32px;
 }
 
 /* Floating Hearts */
@@ -108,11 +159,16 @@ button {
     <button id="no">No 😜</button>
   </div>
 
-  <div id="message">You made me the happiest person alive ❤️ I love you sweetheart 💕</div>
+  <div id="message"></div>
+
+  <div class="love-box" id="loveBox">
+    <div class="box-lid"></div>
+    <div class="box-base"></div>
+    <div class="love-text">I LOVE YOU SWEETHEART 🤗</div>
+  </div>
 </div>
 
-<!-- 🎵 BACKGROUND MUSIC -->
-<!-- 🔥 CHANGE THIS FILE NAME TO YOUR MP3 NAME -->
+<!-- 🎵 MUSIC -->
 <audio id="bgMusic" loop>
   <source src="Munbe Vaa.mp3" type="audio/mpeg">
 </audio>
@@ -121,32 +177,51 @@ button {
 
 const noBtn = document.getElementById("no");
 const messageDiv = document.getElementById("message");
+const loveBox = document.getElementById("loveBox");
 const music = document.getElementById("bgMusic");
 
-/* FULL SCREEN RUNNING NO BUTTON */
+/* NO button runs full screen */
 noBtn.addEventListener("mouseover", function() {
   const maxX = window.innerWidth - noBtn.offsetWidth;
   const maxY = window.innerHeight - noBtn.offsetHeight;
 
-  const x = Math.random() * maxX;
-  const y = Math.random() * maxY;
-
-  noBtn.style.left = x + "px";
-  noBtn.style.top = y + "px";
+  noBtn.style.left = Math.random() * maxX + "px";
+  noBtn.style.top = Math.random() * maxY + "px";
 });
 
-/* Start everything */
+/* YES clicked */
 function startLove() {
   document.getElementById("question").style.display = "none";
   document.querySelector(".buttons").style.display = "none";
 
   messageDiv.style.display = "block";
-
   music.volume = 0.4;
   music.play().catch(() => {});
 
+  typeWriterEffect("You made me the happiest person alive ❤️");
+
+  setTimeout(() => {
+    loveBox.style.display = "block";
+    loveBox.classList.add("open");
+  }, 3500);
+
   launchConfetti();
   startHearts();
+}
+
+/* Typewriter */
+function typeWriterEffect(text) {
+  let i = 0;
+  messageDiv.innerHTML = "";
+
+  function typing() {
+    if (i < text.length) {
+      messageDiv.innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typing, 60);
+    }
+  }
+  typing();
 }
 
 /* Floating Hearts */
@@ -185,7 +260,7 @@ function launchConfetti() {
 
 function drawConfetti() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  confetti.forEach((c, i) => {
+  confetti.forEach((c) => {
     ctx.beginPath();
     ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
     ctx.fillStyle = c.color;
